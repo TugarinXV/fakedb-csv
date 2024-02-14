@@ -1,0 +1,57 @@
+"""
+данный файл представляет из себя 2 функции:
+`fake_db()` - создаёт липовую базу данных для проверок
+`json2csv()` - конвертер json в csv
+
+автор: Валера Тугарин
+дата: 14.02.2024
+потрачено: ~5ч., с удовольствием🙂 
+"""
+
+import json
+from faker import Faker
+import os
+
+def fake_db(amount: int=100):
+    fake = Faker() # дефолт: создаю экземпляр фейкера
+    people_data = [] # и тут же создал объект, если бы это была функция, то он был бы временным, поэтому не страшно 
+
+    for i in range(amount): # пиздопляска, генерирую фейковых людишек
+        person = {
+            "id": i + 1,
+            "name": fake.name(),
+            "country": fake.country(),
+            "email": fake.email(),
+            "phone_number": fake.phone_number(),
+        }
+        people_data.append(person) # добавил словарь людишка в список
+
+    # записываю список словарей в джейсон(стэтхем? нет блять джиленгхолл)
+    filename = "dbinput.json"
+    file_path = os.path.join(os.getcwd(), filename) # рофл, просто хотел узнать как работает
+    with open(filename, 'w') as json_file:
+        json.dump(people_data, json_file, indent=4)
+
+    
+    
+    return print(f'\nпуть к фейковой базе данных: \n{file_path}\n')
+
+
+def json2csv(filename="dbinput.json"):
+    try:
+        with open(filename, 'r') as file:
+            data = json.loads(file.read())
+
+        output = ','.join(data[0].keys())
+        for obj in data:
+            output += f'\n{','.join(map(str, obj.values()))}'
+
+
+
+        with open("output.csv", 'w') as f:
+            f.write(output)
+    except Exception as ex:
+        print(f'\n{ex}\n')
+
+fake_db()
+json2csv()
